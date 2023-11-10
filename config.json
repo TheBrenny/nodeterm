@@ -1,0 +1,7 @@
+{
+    "inspect": {
+        "host": "127.99.110.101",
+        "cmd": "node inspect ${target}",
+        "console": "wt -w 0 split-pane -s 0.35 -H -p \"NodeJS Inspector\" ${cmd}; move-focus up"
+    }
+}
