@@ -26,15 +26,8 @@ module.exports.readdir = (predicate) => {
         else if(stats.isSocket()) t += "S";
         else t += "?";
         // t = stats.isFile() ? "-" : (stats.isDirectory() ? "D" : (stats.isSymbolicLink() ? "L" : "?"));
-        t += (mode >> 8 & 0b1) === 1 ? "r" : "-";
-        t += (mode >> 7 & 0b1) === 1 ? "w" : "-";
-        t += (mode >> 6 & 0b1) === 1 ? "x" : "-";
-        t += (mode >> 5 & 0b1) === 1 ? "r" : "-";
-        t += (mode >> 4 & 0b1) === 1 ? "w" : "-";
-        t += (mode >> 3 & 0b1) === 1 ? "x" : "-";
-        t += (mode >> 2 & 0b1) === 1 ? "r" : "-";
-        t += (mode >> 1 & 0b1) === 1 ? "w" : "-";
-        t += (mode >> 0 & 0b1) === 1 ? "x" : "-";
+        mode = mode.toString(2).padStart(9, "0").slice(-9);
+        t += "rwxrwxrwx".split("").map((e,i) => mode.charAt(i) === "1" ? e : "-").join("")
         ret.push(t);
 
         // last modified
