@@ -1,5 +1,5 @@
 let {spawnSync} = require("child_process");
-let {writeFile, access, chmod} = require("fs/promises");
+let {writeFile, access, chmod, stat, constants} = require("fs/promises");
 let {homedir} = require("os");
 let {join} = require("path");
 
@@ -27,13 +27,14 @@ let {join} = require("path");
         }
     } else {
         console.log("Making ./nodeterm executable");
-        await chmod(join(__dirname, "nodeterm"), fsConsts.S_IXUSR);
+        let mode = (await stat(join(__dirname, "nodeterm"))).mode;
+        await chmod(join(__dirname, "nodeterm"), mode + constants.S_IXUSR);
         let bpPath = join(homedir(), ".bash_profile");
         let bpExists = await access(bpPath).then(() => true).catch(() => false);
-        if(bpExists) await writeFile(bpPath, `\n\nPATH=$PATH:${__dirname}/nodeterm`);
+        if(bpExists) await writeFile(bpPath, `\n\nexport PATH="$PATH:${__dirname}/nodeterm"`);
         else {
             console.log("Put the following in your `~/.bash_profile` equivalent:");
-            console.log(`PATH=$PATH:${__dirname}/nodeterm`);
+            console.log(`export PATH="$PATH:${__dirname}/nodeterm"`);
         }
     }
 })();
