@@ -4,18 +4,18 @@ const child_process = require('child_process');
 const inspector = require("inspector");
 const path = require('path');
 
-let {readdir} = require("./helpers.js");
+let { readdir } = require("./helpers.js");
 
 module.exports = {
     // TODO: Each object in this object should have a '.help' so we can get help
     help: {
-        fn: function () {console.log("Coming soon...")},
+        fn: function () { console.log("Coming soon...") },
         //binding: "get", // the binding is default at "get" // MAYBE: could we change this to a get proxy or something so we can go `help.command` ?
         help: "Shows this help message"
     },
     // TODO: I would absolutely love a way to get and change the config
     config: {
-        fn: function () {console.log("Coming soon...")},
+        fn: function () { console.log("Coming soon...") },
         help: "Gets and sets the config"
     },
     clear: {
@@ -28,11 +28,19 @@ module.exports = {
     },
     cd: {
         fn: function (dir) {
-            if(typeof dir !== "undefined") process.chdir(dir.replace("~", os.homedir()));
+            if (typeof dir !== "undefined") process.chdir(dir.replace("~", os.homedir()));
             return process.cwd();
         },
         binding: "value",
         help: "Changes directories"
+    },
+    pwd: {
+        fn: function () {
+            let p = process.cwd();
+            console.log(p);
+            return p;
+        },
+        help: "Prints working directory"
     },
     ls: {
         fn: function () {
@@ -82,22 +90,22 @@ module.exports = {
             const reqCache = Object.keys(require.cache);
             const deleteCache = (c) => (delete require.cache[c]);
 
-            if(module === undefined) {
+            if (module === undefined) {
                 let ret = 0;
-                for(const c of reqCache) {
+                for (const c of reqCache) {
                     deleteCache(reqCache[c]);
-                    if(fs.existsSync(c)) {
+                    if (fs.existsSync(c)) {
                         require(path.resolve(c));
                         ret++;
                     }
                 }
                 return ret;
             } else {
-                if(module.startsWith("./")) {
+                if (module.startsWith("./") || module.startsWith("../" || module.startsWith("/"))) {
                     try {
-                        module = fs.realpathSync(path.resolve(pwd, module));
-                        if(path.extname(module) == "") module += ".js";
-                    } catch(e) {}
+                        module = fs.realpathSync(module.startsWith("/") ? module : path.resolve(process.cwd(), module));
+                        if (path.extname(module) == "") module += ".js";
+                    } catch (e) { }
                 }
 
                 deleteCache(module);
